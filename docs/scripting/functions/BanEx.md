@@ -4,34 +4,33 @@ description: Ban a player with a reason.
 tags: ["administration"]
 ---
 
-## Description
+## Açıklama
 
-Ban a player with a reason.
+Bir oyuncu herhangi bir nedenle yasaklama.
 
-| Name     | Description                  |
+| İsim     | Açıklama                  |
 | -------- | ---------------------------- |
-| playerid | The ID of the player to ban. |
-| reason   | The reason for the ban.      |
+| Oyuncu ID | Yasaklanacak oyuncu için belirlenmiş ID numarası. |
+| Sebep | Oyuncunun yasaklanma nedeni.      |
 
-## Returns
+## Sonuç
 
-This function does not return any specific values.
+Bu işlev herhangi bir değer döndürmüyor.
 
-## Examples
+## Örnek
 
 ```c
 public OnPlayerCommandText( playerid, cmdtext[] )
 {
-    if (!strcmp(cmdtext, "/banme", true))
+    if (!strcmp(cmdtext, "/yasaklabeni", true))
     {
-        // Bans the player who executed this command and includes a reason ("Request")
-        BanEx(playerid, "Request");
+        // Bu komutu kullanan oyuncuyu şu gerekçe ile yasaklar: "İstek"
+        BanEx(playerid, "İstek");
         return 1;
     }
 }
-/*In order to display a message (eg. reason) for the player before the connection is closed
-you have to use a timer to create a delay. This delay needs only to be a few milliseconds long,
-but this example uses a full second just to be on the safe side.*/
+/* Oyuncunun sunucu ile bağlantısı kesilmeden önce yasaklanma nedenini göstermek için bir zamanlayıcı kullanmanız gerekir.
+Zamanlayıcı da şu şekilde yapılır: */
 
 forward BanExPublic(playerid, reason[]);
 
@@ -42,32 +41,27 @@ public BanExPublic(playerid, reason[])
 
 stock BanExWithMessage(playerid, color, message[], reason[])
 {
-    //reason - The ban reason to be used for BanEx.
-    SendClientMessage(playerid, color, message);
+    // "Yasaklanma Nedeni" yerine oyuncunun ekranında görünmesi istenen mesajın yazılması gerekiyor.
+    SendClientMessage(playerid, color, "Yasaklanma Nedeni");
     SetTimerEx("BanExPublic", 1000, false, "ds", playerid, reason);
 }
 
+/* Oyuncuyu yasaklamadan önce mesaj göndermek için gerekli işlemleri tamamladıktan sonra yapılması gerekenleri
+örnek bir komutla inceleyelim. */
+
 public OnPlayerCommandText(playerid, cmdtext[])
 {
-    if (strcmp(cmdtext, "/banme", true) == 0)
+    if (strcmp(cmdtext, "/yasaklabeni", true) == 0)
     {
-        //Bans the player who executed this command.
-        BanExWithMessage(playerid, 0xFF0000FF, "You have been banned!", "Request");
+        // Bu komutu kullanan kişinin ekranına "Yasaklandın!" mesajı çıkar, oyuncunun yasaklanma defteri yasak defterine "İstek" olarak kaydedilir.
+        BanExWithMessage(playerid, 0xFF0000FF, "Yasaklandın!", "İstek");
         return 1;
     }
     return 0;
 }
 ```
 
-## Notes
-
-:::warning
-
-As of SA-MP 0.3x, any action taken directly before BanEx() (such as sending a message with SendClientMessage) will not reach the player. A timer must be used to delay the ban.
-
-:::
-
 ## Related Functions
 
-- [Ban](Ban): Ban a player from playing on the server.
-- [Kick](Kick): Kick a player from the server.
+- [Ban](Ban): Bir oyuncunun sunucudan yasaklanmasını sağlar.
+- [Kick](Kick): Bir oyuncunun sunucudan atılmasını sağlar. Ban fonksiyonundan farkı, oyuncunun yeniden giriş yapabilmesidir.
